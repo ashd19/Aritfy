@@ -1,0 +1,275 @@
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { User, MapPin, ArrowLeft, CreditCard, Banknote, QrCode } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+interface CardDetails {
+  number: string;
+  expiry: string;
+  cvc: string;
+}
+
+interface ValidationErrors {
+  card?: string;
+  expiry?: string;
+  cvc?: string;
+  upi?: string;
+}
+
+const Buy = () => {
+  const [showForm, setShowForm] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [cardDetails, setCardDetails] = useState<CardDetails>({ number: '', expiry: '', cvc: '' });
+  const [upiId, setUpiId] = useState('');
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const navigate = useNavigate();
+
+  // Artwork data - in a real app, this would come from props or an API
+  const artwork = {
+    id: 1,
+    title: "NEON DREAMS",
+    price: "$2,500",
+    image: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=600&fit=crop",
+    description: "A captivating piece exploring the subconscious mind through a vibrant, glitch-infused neon cityscape."
+  };
+
+  const artist = {
+    name: "MAYA STORM",
+    location: "TOKYO, JAPAN",
+    specialty: "DIGITAL ABSTRACT"
+  };
+
+  const handleBuyNowClick = () => {
+    setShowForm(true);
+    // Scroll to form section
+    setTimeout(() => {
+      const formElement = document.getElementById('payment-form');
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+
+  const validateForm = (): boolean => {
+    const errors: ValidationErrors = {};
+    
+    if (paymentMethod === 'card') {
+      if (!cardDetails.number || cardDetails.number.replace(/\s/g, '').length !== 16) {
+        errors.card = 'Card number must be 16 digits';
+      }
+      if (!cardDetails.expiry || !/^(0[1-9]|1[0-2])\/?([0-9]{2})$/.test(cardDetails.expiry)) {
+        errors.expiry = 'Invalid expiry (MM/YY)';
+      }
+      if (!cardDetails.cvc || !/^\d{3}$/.test(cardDetails.cvc)) {
+        errors.cvc = 'CVC must be 3 digits';
+      }
+    } else if (paymentMethod === 'upi' && !/^[a-zA-Z0-9._-]+@[a-zA-Z0-9]+$/.test(upiId)) {
+      errors.upi = 'Please enter a valid UPI ID';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateForm()) {
+      // Handle form submission
+      alert('Payment processed successfully!');
+    }
+  };
+
+  const renderPaymentFields = () => {
+    switch (paymentMethod) {
+      case 'card':
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold uppercase mb-2">CARD NUMBER</label>
+              <input
+                type="text"
+                className="w-full p-3 border-3 border-black bg-white font-bold uppercase placeholder-gray-500 focus:outline-none focus:bg-yellow-200 transition-colors duration-200"
+                placeholder="XXXX XXXX XXXX XXXX"
+                value={cardDetails.number}
+                onChange={(e) => setCardDetails({ ...cardDetails, number: e.target.value })}
+              />
+              {validationErrors.card && <p className="text-red-500 text-sm mt-1">{validationErrors.card}</p>}
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-bold uppercase mb-2">EXPIRY</label>
+                <input
+                  type="text"
+                  className="w-full p-3 border-3 border-black bg-white font-bold uppercase placeholder-gray-500 focus:outline-none focus:bg-yellow-200 transition-colors duration-200"
+                  placeholder="MM/YY"
+                  value={cardDetails.expiry}
+                  onChange={(e) => setCardDetails({ ...cardDetails, expiry: e.target.value })}
+                />
+                {validationErrors.expiry && <p className="text-red-500 text-sm mt-1">{validationErrors.expiry}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-bold uppercase mb-2">CVC</label>
+                <input
+                  type="text"
+                  className="w-full p-3 border-3 border-black bg-white font-bold uppercase placeholder-gray-500 focus:outline-none focus:bg-yellow-200 transition-colors duration-200"
+                  placeholder="CVC"
+                  value={cardDetails.cvc}
+                  onChange={(e) => setCardDetails({ ...cardDetails, cvc: e.target.value })}
+                />
+                {validationErrors.cvc && <p className="text-red-500 text-sm mt-1">{validationErrors.cvc}</p>}
+              </div>
+            </div>
+          </div>
+        );
+      case 'upi':
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold uppercase mb-2">UPI ID</label>
+              <input
+                type="text"
+                className="w-full p-3 border-3 border-black bg-white font-bold uppercase placeholder-gray-500 focus:outline-none focus:bg-yellow-200 transition-colors duration-200"
+                placeholder="yourname@upi"
+                value={upiId}
+                onChange={(e) => setUpiId(e.target.value)}
+              />
+              {validationErrors.upi && <p className="text-red-500 text-sm mt-1">{validationErrors.upi}</p>}
+            </div>
+            <div className="bg-white border-3 border-black p-4 text-center">
+              <QrCode className="w-32 h-32 mx-auto mb-2" />
+              <p className="text-sm font-bold">Scan the QR code to pay with UPI</p>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto space-y-8">
+        {/* Back Button */}
+        <motion.div
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <button
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center space-x-2 bg-white border-3 border-black px-6 py-3 font-black text-black uppercase tracking-wider hover:bg-gray-100 transition-all duration-200"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>BACK TO ARTWORK</span>
+          </button>
+        </motion.div>
+
+        {/* Artwork Details */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="bg-white border-4 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="border-2 border-black">
+              <img
+                src={artwork.image}
+                alt={artwork.title}
+                className="w-full h-80 object-cover"
+              />
+            </div>
+            <div>
+              <h1 className="text-3xl font-black uppercase mb-2">{artwork.title}</h1>
+              <p className="text-2xl font-bold text-gray-800 mb-6">{artwork.price}</p>
+              
+              <div className="space-y-4 mb-6">
+                <div className="flex items-center space-x-4">
+                  <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center">
+                    <User className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-bold">{artist.name}</p>
+                    <p className="text-sm text-gray-600">{artist.specialty}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2 text-sm">
+                  <MapPin className="w-4 h-4" />
+                  <span>{artist.location}</span>
+                </div>
+              </div>
+              
+              <div className="border-t border-gray-200 pt-4">
+                <p className="text-gray-700">{artwork.description}</p>
+              </div>
+              
+              {!showForm && (
+                <motion.button
+                  onClick={handleBuyNowClick}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full bg-black text-white py-4 px-6 font-black uppercase tracking-wider mt-6 hover:bg-gray-900 transition-colors duration-200"
+                >
+                  BUY NOW
+                </motion.button>
+              )}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Payment Form */}
+        {showForm && (
+          <motion.div
+            id="payment-form"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="bg-white border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+          >
+            <h2 className="text-2xl font-black uppercase mb-6">PAYMENT DETAILS</h2>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Payment Method Selector */}
+              <div>
+                <p className="text-sm font-bold uppercase mb-3">SELECT PAYMENT METHOD</p>
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('card')}
+                    className={`flex items-center justify-center p-4 border-3 ${paymentMethod === 'card' ? 'border-black bg-yellow-100' : 'border-gray-300 bg-white'} font-bold uppercase transition-all duration-200`}
+                  >
+                    <CreditCard className="w-5 h-5 mr-2" />
+                    Card
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('upi')}
+                    className={`flex items-center justify-center p-4 border-3 ${paymentMethod === 'upi' ? 'border-black bg-yellow-100' : 'border-gray-300 bg-white'} font-bold uppercase transition-all duration-200`}
+                  >
+                    <QrCode className="w-5 h-5 mr-2" />
+                    UPI
+                  </button>
+                </div>
+              </div>
+
+              {/* Payment Fields */}
+              {renderPaymentFields()}
+
+              {/* Submit Button */}
+              <motion.button
+                type="submit"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full bg-black text-white py-4 px-6 font-black uppercase tracking-wider hover:bg-gray-900 transition-colors duration-200"
+              >
+                PAY {artwork.price}
+              </motion.button>
+            </form>
+          </motion.div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Buy;
