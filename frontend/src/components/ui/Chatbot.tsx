@@ -72,7 +72,7 @@ Remember: You're not just solving technical problems—you're helping artists ov
 
   // Method to call Gemini API
   async sendToGemini(userMessage: string): Promise<string> {
-    const apiKey = "AIzaSyBaEwc-Nb0egZmlDQmjNOyy1iE5JIN3b2o";
+    const apiKey = "";
     if (!apiKey) {
       throw new Error("Gemini API key not found");
     }
