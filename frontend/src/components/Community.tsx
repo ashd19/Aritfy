@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Heart, MessageCircle, ShoppingCart, Star, Eye, User, MapPin, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import  { useState, useEffect, useMemo } from 'react';
+import { Heart, MessageCircle, ShoppingCart, Eye, User, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 type CurrentSlides = {
@@ -7,14 +7,15 @@ type CurrentSlides = {
 };
 
 const Community = () => {
+  type Comment = { id: number; text: string; user: string; timestamp: string; };
   const [likedArtworks, setLikedArtworks] = useState<Set<number>>(new Set());
-  const [comments, setComments] = useState<Record<string, any>>({});
-  const [newComment, setNewComment] = useState<Record<string, string>>({});
+  const [comments, setComments] = useState<Record<number, Comment[]>>({});
+  const [newComment, setNewComment] = useState<Record<number, string>>({});
   const [currentSlides, setCurrentSlides] = useState<CurrentSlides>({});
   const navigate = useNavigate();
 
   // Dummy artists data
-  const artists = [
+  const artists = useMemo(() => [
     {
       id: 1,
       name: "MAYA STORM",
@@ -75,18 +76,18 @@ const Community = () => {
         { id: 15, title: "CRYSTAL MEMORIES", price: "$9,200", likes: 2198, views: "8.7K", image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop" }
       ]
     }
-  ];
+  ], []);
 
   useEffect(() => {
    // Initialize current slides for each artist
-    const initialSlides = {};
+    const initialSlides: CurrentSlides = {};
     artists.forEach(artist => {
       initialSlides[artist.id] = 0;
     });
     setCurrentSlides(initialSlides);
-  }, []);
+  }, [artists]);
 
-  const handleLike = (artworkId) => {
+  const handleLike = (artworkId : number) => {
     const newLiked = new Set(likedArtworks);
     if (newLiked.has(artworkId)) {
       newLiked.delete(artworkId);
@@ -116,7 +117,7 @@ const Community = () => {
     }
   };
 
-  const handleComment = (artworkId) => {
+  const handleComment = (artworkId:number) => {
     if (newComment[artworkId]?.trim()) {
       const updatedComments = { ...comments };
       if (!updatedComments[artworkId]) {
@@ -133,14 +134,14 @@ const Community = () => {
     }
   };
 
-  const nextSlide = (artistId, totalSlides) => {
+  const nextSlide = (artistId : number , totalSlides:number) => {
     setCurrentSlides(prev => ({
       ...prev,
       [artistId]: (prev[artistId] + 1) % totalSlides
     }));
   };
 
-  const prevSlide = (artistId, totalSlides) => {
+  const prevSlide = (artistId: number, totalSlides: number) => {
     setCurrentSlides(prev => ({
       ...prev,
       [artistId]: prev[artistId] === 0 ? totalSlides - 1 : prev[artistId] - 1
@@ -340,10 +341,9 @@ const Community = () => {
                     </button>
                   </div>
                   
-                  {/* Comments Display */}
                   {comments[artist.artworks[currentSlides[artist.id] || 0].id] && (
                     <div className="mt-4 space-y-3">
-                      {comments[artist.artworks[currentSlides[artist.id] || 0].id].map(comment => (
+                      {comments[artist.artworks[currentSlides[artist.id] || 0].id].map((comment: Comment) => (
                         <div key={comment.id} className="bg-white border-2 border-black p-4">
                           <div className="flex items-center justify-between mb-2">
                             <span className="font-black text-black text-sm uppercase">{comment.user}</span>
@@ -354,6 +354,7 @@ const Community = () => {
                       ))}
                     </div>
                   )}
+                  ){'}'}
                 </div>
               </div>
             )}

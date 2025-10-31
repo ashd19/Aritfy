@@ -1,19 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import  { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Palette, 
   Image, 
   Search, 
   Users, 
-  Play, 
   MessageCircle, 
   Briefcase,
   UserPlus,
   Upload,
   Share2,
-  Star,
   Eye,
   Heart,
   ArrowRight,
@@ -21,7 +18,6 @@ import {
   Camera,
   Video,
   Box,
-  Zap,
   Target,
   Rocket
 } from 'lucide-react';
@@ -29,12 +25,10 @@ import { TypewriterEffect } from '@/components/ui/typewriter-effect';
 import Footer from '@/components/ui/Footer';
 import { useNavigate } from 'react-router-dom';
 
-// @ts-ignore
-let RINGS: any;
+// let RINGS: unknown;
 
 const LandingPage = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [currentImage, setCurrentImage] = useState(0);
 
   const navigate = useNavigate();
   
@@ -42,13 +36,6 @@ const LandingPage = () => {
 
   useEffect(() => {
     setIsVisible(true);
-    
-    // Rotating demo images
-    const imageInterval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % 6);
-    }, 2000);
-
-    return () => clearInterval(imageInterval);
   }, []);
 
   const mockArtworks = [

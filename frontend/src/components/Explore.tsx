@@ -79,7 +79,7 @@ interface Community {
 interface CommunityCategory {
   id: string;
   name: string;
-  icon: any;
+  icon: React.ReactNode;
   color: string;
 }
 
@@ -150,7 +150,7 @@ const CommunityDiscovery: React.FC = () => {
   const [selectedChannel, setSelectedChannel] = useState<string>("general");
   const [messageInput, setMessageInput] = useState("");
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  // const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showMembersList, setShowMembersList] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 

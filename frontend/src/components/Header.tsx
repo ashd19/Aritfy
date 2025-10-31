@@ -1,6 +1,5 @@
-import * as React from 'react';
 import { useState } from 'react';
-import { Menu, X, User, Settings, LogOut, Folder, BarChart3, ChevronDown, Bell, Search, Plus, Heart, MessageCircle, TrendingUp } from 'lucide-react';
+import { Menu, X, User,  LogOut, ChevronDown, Search, Plus,  MessageCircle} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../store/slices/authSlice';
 import { useSelector } from 'react-redux';

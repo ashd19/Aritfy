@@ -48,7 +48,7 @@ interface Stat {
 
 export default function AboutUs() {
   const [activeSection, setActiveSection] = useState("story");
-  const [hoveredMember, setHoveredMember] = useState<number | null>(null);
+  const [, setHoveredMember] = useState<number | null>(null);
   const [showToast, setShowToast] = useState<string | null>(null);
 
   const teamMembers: TeamMember[] = [

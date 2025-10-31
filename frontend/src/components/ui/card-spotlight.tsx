@@ -1,9 +1,39 @@
 "use client";
 
 import { useMotionValue, motion, useMotionTemplate } from "motion/react";
-import React, { MouseEvent as ReactMouseEvent, useState } from "react";
-import { CanvasRevealEffect } from "@/components/ui/canvas-reveal-effect";
+import React, { type MouseEvent as ReactMouseEvent, useState } from "react";
 import { cn } from "@/lib/utils";
+
+// Minimal local fallback for CanvasRevealEffect to avoid missing module errors.
+// It provides the same props used by CardSpotlight and renders a simple decorative overlay.
+const CanvasRevealEffect: React.FC<{
+  containerClassName?: string;
+  colors?: number[][];
+  dotSize?: number;
+}> = ({
+  containerClassName = "",
+  colors = [
+    [59, 130, 246],
+    [139, 92, 246],
+  ],
+}) => {
+  return (
+    <div className={containerClassName} aria-hidden>
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          background: `radial-gradient(circle at 20% 20%, rgba(${colors[0].join(
+            ","
+          )},0.35) 0px, transparent 40%), radial-gradient(circle at 80% 80%, rgba(${colors[1].join(
+            ","
+          )},0.35) 0px, transparent 40%)`,
+        }}
+      />
+    </div>
+  );
+};
 
 export const CardSpotlight = ({
   children,
@@ -23,7 +53,7 @@ export const CardSpotlight = ({
     clientX,
     clientY,
   }: ReactMouseEvent<HTMLDivElement>) {
-    let { left, top } = currentTarget.getBoundingClientRect();
+    const { left, top } = currentTarget.getBoundingClientRect();
 
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);
@@ -58,7 +88,6 @@ export const CardSpotlight = ({
       >
         {isHovering && (
           <CanvasRevealEffect
-            animationSpeed={5}
             containerClassName="bg-transparent absolute inset-0 pointer-events-none"
             colors={[
               [59, 130, 246],
@@ -68,7 +97,8 @@ export const CardSpotlight = ({
           />
         )}
       </motion.div>
-      {children}
+
+      <div className="relative z-10">{children}</div>
     </div>
   );
 };

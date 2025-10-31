@@ -8,7 +8,7 @@ import './index.css';
 import App from './App.tsx';
 import Navbar from './components/Header.tsx';
 import Chatbot from './components/ui/Chatbot.tsx';
-import ProfilePage from './pages/ProfilePage.tsx';
+// import ProfilePage from './pages/ProfilePage.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
